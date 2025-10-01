@@ -1,103 +1,204 @@
-import Image from "next/image";
+"use client"
+import { useState, useEffect, useRef } from "react";
+import { FaCheck, FaTrash } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Task type definition
+type Task = {
+  id: number;
+  title: string;
+  time: string; // "HH:MM" format
+  done: boolean;
+  notified?: boolean; // to prevent multiple notifications
+};
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [title, setTitle] = useState("");
+  const [time, setTime] = useState("");
+  const [alarmTask, setAlarmTask] = useState<Task | null>(null);
+  const alarmRef = useRef<HTMLAudioElement | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  // Initialize audio alarm only in browser
+  useEffect(() => {
+    alarmRef.current = new Audio(
+      "https://cdn.pixabay.com/download/audio/2025/07/18/audio_7a9ff3366a.mp3?filename=ringtone-023-376906.mp3"
+    );
+    alarmRef.current.loop = true; // repeat until dismissed
+  }, []);
+
+  // Load tasks from localStorage on component mount
+  useEffect(() => {
+    const saved = localStorage.getItem("tasks");
+    if (saved) setTasks(JSON.parse(saved));
+  }, []);
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  // Check for alarm every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
+        now.getMinutes()
+      ).padStart(2, "0")}`;
+
+      tasks.forEach((task) => {
+        // If task is not done and time matches and notification not sent
+        if (!task.done && task.time === currentTime && !task.notified) {
+          setAlarmTask(task); // show modal
+          alarmRef.current?.play(); // play alarm
+          // mark as notified to prevent repeated alarms
+          setTasks((prev) =>
+            prev.map((t) =>
+              t.id === task.id ? { ...t, notified: true } : t
+            )
+          );
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [tasks]);
+
+  // Add new task
+  const addTask = () => {
+    if (!title || !time) return;
+    const newTask: Task = { id: Date.now(), title, time, done: false, notified: false };
+    setTasks([...tasks, newTask]);
+    setTitle("");
+    setTime("");
+  };
+
+  // Toggle task completion
+  // Once a task is marked done, it cannot be undone
+  const toggleDone = (id: number) => {
+    setTasks(tasks.map((t) => {
+      if (t.id === id && !t.done) {
+        return { ...t, done: true };
+      }
+      return t;
+    }));
+  };
+
+  // Delete a task
+  const deleteTask = (id: number) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+  };
+
+  // Dismiss alarm modal and stop sound
+  const dismissAlarm = () => {
+    alarmRef.current?.pause();
+    if (alarmRef.current) alarmRef.current.currentTime = 0;
+    setAlarmTask(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-8 flex flex-col items-center text-white font-sans">
+      {/* Header */}
+      <h1 className="text-5xl font-extrabold mb-8 text-purple-400">Daily Planner</h1>
+
+      {/* Task Input */}
+      <div className="flex gap-3 mb-8 w-full max-w-xl">
+        <input
+          type="text"
+          placeholder="Task Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="flex-1 p-3 rounded-2xl border-2 border-purple-700 focus:outline-none text-white"
+        />
+        <input
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          className="p-3 rounded-2xl  focus:outline-none border-2 border-purple-700 text-white"
+        />
+        <button
+          onClick={addTask}
+          className="px-5 py-3 bg-purple-600 rounded-2xl hover:bg-purple-700 transition"
+        >
+          Add
+        </button>
+      </div>
+
+      {/* Task List */}
+      <ul className="w-full max-w-xl space-y-4">
+        <AnimatePresence>
+          {tasks.map((task) => (
+            <motion.li
+              key={task.id}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              layout
+              className={`flex justify-between items-center p-5 rounded-3xl shadow-2xl bg-gradient-to-r ${
+                task.done
+                  ? "from-green-500 to-green-400"
+                  : "from-purple-700 to-pink-600"
+              }`}
+            >
+              <div>
+                <h2
+                  className={`text-xl font-bold ${
+                    task.done ? "line-through text-gray-200" : "text-white"
+                  }`}
+                >
+                  {task.title}
+                </h2>
+                <p className="text-sm text-gray-200">{task.time}</p>
+              </div>
+              <div className="flex gap-3">
+                {/* Done button: can be clicked only once */}
+                <button
+                  onClick={() => toggleDone(task.id)}
+                  className="p-3 bg-white rounded-full text-green-600 hover:bg-green-100 transition"
+                >
+                  <FaCheck />
+                </button>
+                <button
+                  onClick={() => deleteTask(task.id)}
+                  className="p-3 bg-white rounded-full text-red-600 hover:bg-red-100 transition"
+                >
+                  <FaTrash />
+                </button>
+                
+              </div>
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+
+      {/* Alarm Modal */}
+      <AnimatePresence>
+        {alarmTask && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <motion.div
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.7, opacity: 0 }}
+              className="bg-white text-black rounded-3xl p-8 w-96 flex flex-col items-center gap-4 shadow-2xl"
+            >
+              <h2 className="text-2xl font-bold text-red-600">⏰ Time Up!</h2>
+              <p className="text-xl font-semibold">{alarmTask.title}</p>
+              <p className="text-gray-600">{alarmTask.time}</p>
+              <button
+                onClick={dismissAlarm}
+                className="mt-4 px-6 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
+              >
+                Dismiss
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
