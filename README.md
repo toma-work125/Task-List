@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div>
+  <h1>Click on the GitHub icon below to view the project online.</h1>
+  <a href="https://your-tasklist-project-link.netlify.app/">
+    <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"/>
+  </a>
+</div>
 
-## Getting Started
+# Daily Planner Pro 🗓️🔔
 
-First, run the development server:
+Daily Planner Pro is a modern, interactive task management web application built with React and Next.js. Users can add tasks with specific times, receive visual and audio reminders when a task is due, and mark tasks as completed. The project demonstrates advanced front-end skills using React, Next.js, TypeScript, Tailwind CSS, Framer Motion, and React Icons.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<ul>
+  <li>Add tasks with titles and specific times</li>
+  <li>Tasks are persisted in localStorage, so refreshing the page doesn't erase them</li>
+  <li>Visual modal alert pops up when a task's time is reached</li>
+  <li>Audio alarm plays alongside the modal alert</li>
+  <li>Once a task is marked done, it cannot be unmarked</li>
+  <li>Delete or edit tasks</li>
+  <li>Responsive, modern, and smooth UI with gradients, shadows, and hover effects</li>
+  <li>Animated task entry and exit with Framer Motion</li>
+</ul>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Technologies Used:
 
-To learn more about Next.js, take a look at the following resources:
+<ul>
+  <li>
+    React for building UI components
+    <img width='20px' src='https://skillicons.dev/icons?i=react'>
+  </li>
+  <li>
+    Next.js for routing and server-side rendering
+    <img width='20px' src='https://skillicons.dev/icons?i=next'>
+  </li>
+  <li>
+    TypeScript for type safety
+    <img width='20px' src='https://skillicons.dev/icons?i=typescript'>
+  </li>
+  <li>
+    Tailwind CSS for fast and responsive styling
+    <img width='20px' src='https://skillicons.dev/icons?i=tailwindcss'>
+  </li>
+  <li>
+    Framer Motion for smooth animations
+    <img width='20px' src='https://skillicons.dev/icons?i=framer'>
+  </li>
+  <li>
+    React Icons for scalable vector icons
+    <img width='20px' src='https://skillicons.dev/icons?i=react'>
+  </li>
+</ul>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Description:
 
-## Deploy on Vercel
+Daily Planner Pro is a task management tool with a modern design and advanced alert system. Users can:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Add tasks with specific times
+- View tasks in a responsive, gradient-styled list
+- Receive modal alerts with sound when a task is due
+- Mark tasks as completed (cannot be undone)
+- Edit or delete tasks
+- Persist tasks using localStorage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project showcases:
+
+- Modern UI with Tailwind CSS and gradient cards
+- Interactive animations with Framer Motion
+- Audio and modal alert system for task reminders
+- Persistent storage with localStorage
+- Professional front-end design with React and TypeScript
+
+---
+
+<h1 align="center">Project Pictures 🖼️</h1>
+
+<div align="center">
+  <img src="/pic1.png" width="700px" />
+  <br/> <br/>
+  <hr/>
+  <br/> <br/>
+  <img src="/pic2.png" width="700px" />
+</div>
