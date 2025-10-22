@@ -1,7 +1,7 @@
 <div align="center">
   <h1>🗓️ Daily Planner Pro</h1>
   <p>Manage your daily tasks with alerts, sounds, and modern animations 🔔</p>
-  <a href="https://hamiparsa.github.io/Task-List/">
+  <a href="https://honestdev125.github.io/Task-List/">
     <img src="https://img.shields.io/badge/View_Live_Project-1DA1F2?style=for-the-badge&logo=github&logoColor=white"/>
   </a>
 </div>
@@ -70,7 +70,7 @@ The project demonstrates:
 
 ## 👨‍💻 Author
 
-**Developed by:** [Hami Parsa](https://github.com/hamiparsa)  
+**Developed by:** [Niku Namada](https://github.com/honestdev125)  
 💬 Front-End Developer | Passionate about interactive web applications  
 
 ---
